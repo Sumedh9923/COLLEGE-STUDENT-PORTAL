@@ -1,60 +1,118 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Student</title>
     <link rel="stylesheet" href="{% static 'students/style.css' %}">
 </head>
 
 <body>
 
-<h1>Add Student</h1>
+<nav class="navbar">
+    <a href="/" class="logo">🎓 Student Portal</a>
 
-<form method="POST">
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/students/">Students</a>
+        <a href="/add/">Add Student</a>
+        <a href="/search/">Search</a>
+        <a href="/high-scorers/">High Scorers</a>
+        <a href="/admin/">Admin</a>
+    </div>
+</nav>
 
-    {% csrf_token %}
+<main class="container">
 
-    <label>Name:</label>
+    <div class="page-header">
+        <h1>➕ Add New Student</h1>
+        <p>Enter the student's information below.</p>
+    </div>
 
-    <input type="text"
-           name="name"
-           required>
+    <div class="card">
 
-    <br><br>
+        <form method="POST">
 
-    <label>Marks:</label>
+            {% csrf_token %}
 
-    <input type="number"
-           name="marks"
-           step="0.01"
-           min="0"
-           max="100"
-           required>
+            <div class="form-group">
 
-    <br><br>
+                <label for="name">
+                    Student Name
+                </label>
 
-    <label>Department:</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="form-control"
+                    placeholder="Enter student name"
+                    required
+                >
 
-    <input type="text"
-           name="department"
-           required>
+            </div>
 
-    <br><br>
+            <div class="form-group">
 
-    <button type="submit">
-        Save Student
-    </button>
+                <label for="marks">
+                    Marks
+                </label>
 
-</form>
+                <input
+                    type="number"
+                    id="marks"
+                    name="marks"
+                    class="form-control"
+                    placeholder="Enter marks"
+                    min="0"
+                    max="100"
+                    required
+                >
 
-<br>
+            </div>
 
-<a href="{% url 'student_list' %}">
-    View Students
-</a>
+            <div class="form-group">
+
+                <label for="department">
+                    Department
+                </label>
+
+                <input
+                    type="text"
+                    id="department"
+                    name="department"
+                    class="form-control"
+                    placeholder="Example: Computer"
+                    required
+                >
+
+            </div>
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn btn-success">
+                    ✓ Add Student
+                </button>
+
+                <a href="/students/"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+<footer class="footer">
+    © 2026 College Student Portal
+</footer>
 
 </body>
-
 </html>

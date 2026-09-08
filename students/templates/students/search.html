@@ -1,54 +1,177 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="{% static 'students/style.css' %}"
-    <title>Search Student</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Students</title>
+    <link rel="stylesheet" href="{% static 'students/style.css' %}">
 </head>
 
 <body>
 
-<h1>Search Student</h1>
+<nav class="navbar">
+    <a href="/" class="logo">🎓 Student Portal</a>
 
-<form method="GET">
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/students/">Students</a>
+        <a href="/add/">Add Student</a>
+        <a href="/search/">Search</a>
+        <a href="/high-scorers/">High Scorers</a>
+        <a href="/admin/">Admin</a>
+    </div>
+</nav>
 
-    <input type="text"
-           name="q"
-           placeholder="Enter student name"
-           value="{{ query }}">
+<main class="container">
 
-    <button type="submit">
-        Search
-    </button>
+    <div class="page-header">
+        <h1>🔍 Search Students</h1>
+        <p>Search for a student using their name.</p>
+    </div>
 
-</form>
+    <div class="card">
 
-<br>
+        <form method="GET" action="/search/">
 
-{% for student in students %}
+            <div class="search-box">
 
-<p>
-    <b>{{ student.name }}</b>
-    -
-    {{ student.marks }}
-    -
-    {{ student.department }}
-</p>
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ q }}"
+                    class="form-control"
+                    placeholder="Enter student name..."
+                >
 
-{% empty %}
+                <button type="submit"
+                        class="btn btn-primary">
+                    🔍 Search
+                </button>
 
-<p>No matching student found.</p>
+            </div>
 
-{% endfor %}
+        </form>
 
-<br>
+        {% if q %}
 
-<a href="{% url 'home' %}">
-    Home
-</a>
+            <div class="search-info">
+                Search results for:
+                <strong>"{{ q }}"</strong>
+            </div>
+
+        {% endif %}
+
+        {% if students %}
+
+            <div class="table-wrapper">
+
+                <table class="student-table">
+
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Marks</th>
+                            <th>Department</th>
+                            <th>Performance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for student in students %}
+
+                        <tr>
+
+                            <td class="student-name">
+                                {{ student.name }}
+                            </td>
+
+                            <td class="marks">
+                                {{ student.marks }}
+                            </td>
+
+                            <td class="department">
+                                {{ student.department }}
+                            </td>
+
+                            <td>
+
+                                {% if student.marks >= 80 %}
+
+                                    <span class="badge badge-gold">
+                                        🏆 High Scorer
+                                    </span>
+
+                                {% elif student.marks >= 50 %}
+
+                                    <span class="badge badge-green">
+                                        ✓ Pass
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-blue">
+                                        Needs Improvement
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% elif q %}
+
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    🔍
+                </div>
+
+                <h3>No Matching Student Found</h3>
+
+                <p>
+                    We couldn't find a student matching
+                    "{{ q }}".
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    🔎
+                </div>
+
+                <h3>Start Searching</h3>
+
+                <p>
+                    Enter a student's name above to search.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</main>
+
+<footer class="footer">
+    © 2026 College Student Portal
+</footer>
 
 </body>
-
 </html>

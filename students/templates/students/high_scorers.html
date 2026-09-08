@@ -1,38 +1,110 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>High Scorers</title>
+    <link rel="stylesheet" href="{% static 'students/style.css' %}">
 </head>
 
 <body>
 
-<h1>High Scorers - 80 or Above</h1>
+<nav class="navbar">
+    <a href="/" class="logo">🎓 Student Portal</a>
 
-{% for student in students %}
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/students/">Students</a>
+        <a href="/add/">Add Student</a>
+        <a href="/search/">Search</a>
+        <a href="/high-scorers/">High Scorers</a>
+        <a href="/admin/">Admin</a>
+    </div>
+</nav>
 
-<p>
-    {{ student.name }}
-    -
-    {{ student.marks }}
-    -
-    {{ student.department }}
-</p>
+<main class="container">
 
-{% empty %}
+    <div class="page-header">
+        <h1>🏆 High Scorers</h1>
+        <p>
+            Students who achieved 80 marks or above.
+        </p>
+    </div>
 
-<p>No high scorers found.</p>
+    {% if students %}
 
-{% endfor %}
+        <div class="scorer-grid">
 
-<br>
+            {% for student in students %}
 
-<a href="{% url 'home' %}">
-    Home
-</a>
+            <div class="scorer-card">
+
+                <div class="trophy">
+                    🏆
+                </div>
+
+                <h3>
+                    {{ student.name }}
+                </h3>
+
+                <p>
+                    {{ student.department }}
+                </p>
+
+                <div class="score">
+                    {{ student.marks }}
+                </div>
+
+                <div style="margin-top: 8px;">
+                    <span class="badge badge-gold">
+                        High Scorer
+                    </span>
+                </div>
+
+                <div style="margin-top: 20px;">
+
+                    <a href="/edit/{{ student.id }}/"
+                       class="btn btn-primary btn-small">
+                        ✏️ Edit
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="card">
+
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    🏆
+                </div>
+
+                <h3>No High Scorers Yet</h3>
+
+                <p>
+                    No student has reached 80 marks yet.
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</main>
+
+<footer class="footer">
+    © 2026 College Student Portal
+</footer>
 
 </body>
-
 </html>
