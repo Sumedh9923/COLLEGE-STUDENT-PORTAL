@@ -272,24 +272,19 @@
 
             <div class="grade-chart">
 
-                {% for grade, count in grade_distribution.items %}
-                    <div class="chart-row">
+            {% for grade, count in grade_distribution.items %}
+            <div class="chart-row">
+                <span class="chart-label">{{ grade }}</span>
 
-                        <span class="chart-label">
-                            {{ grade }}
-                        </span>
-
-                        <div class="chart-bar-container">
-                            <div
-                                class="chart-bar"
-                                style="width: {% if total_students %}{% widthratio count total_students 100 %}{% else %}0{% endif %}%;">
-                            </div>
-                        </div>
-
-                        <strong>{{ count }}</strong>
-
+                <div class="chart-bar-container">
+                    <div class="chart-bar"
+                        style="width: {{ count|default:0 }}%;">
                     </div>
-                {% endfor %}
+                </div>
+
+                <strong>{{ count }}</strong>
+            </div>
+            {% endfor %}
 
             </div>
         </div>
@@ -302,22 +297,17 @@
 
                 {% for department in departments %}
                     <div class="chart-row">
-
                         <span class="chart-label">
-                            {{ department.department }}
+                           {{ department.department }}
                         </span>
-
+            
                         <div class="chart-bar-container">
-                            <div
-                                class="chart-bar"
-                                style="width: {% if total_students %}{% widthratio department.student_count total_students 100 %}{% else %}0{% endif %}%;">
+                            <div class="chart-bar"
+                                style="width: {{ department.student_count|default:0 }}%;">
                             </div>
                         </div>
 
-                        <strong>
-                            {{ department.student_count }}
-                        </strong>
-
+                        <strong>{{ department.student_count }}</strong>
                     </div>
                 {% endfor %}
 

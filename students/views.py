@@ -211,44 +211,43 @@ def analytics(request):
 
     grade_distribution = {
         "A+": Student.objects.filter(marks__gte=90).count(),
-        "A": Student.objects.filter(
-            marks__gte=80,
-            marks__lt=90
-        ).count(),
-        "B+": Student.objects.filter(
-            marks__gte=70,
-            marks__lt=80
-        ).count(),
-        "B": Student.objects.filter(
-            marks__gte=60,
-            marks__lt=70
-        ).count(),
-        "C": Student.objects.filter(
-            marks__gte=50,
-            marks__lt=60
-        ).count(),
-        "D": Student.objects.filter(
-            marks__gte=40,
-            marks__lt=50
-        ).count(),
+        "A": Student.objects.filter(marks__gte=80, marks__lt=90).count(),
+        "B+": Student.objects.filter(marks__gte=70, marks__lt=80).count(),
+        "B": Student.objects.filter(marks__gte=60, marks__lt=70).count(),
+        "C": Student.objects.filter(marks__gte=50, marks__lt=60).count(),
+        "D": Student.objects.filter(marks__gte=40, marks__lt=50).count(),
         "F": Student.objects.filter(marks__lt=40).count(),
     }
 
-    context = {
-        "total_students": total_students,
-        "average_marks": round(average_marks, 2)
-            if average_marks else 0,
-        "highest_marks": highest_marks
-            if highest_marks is not None else 0,
-        "lowest_marks": lowest_marks
-            if lowest_marks is not None else 0,
-        "high_scorers_count": high_scorers_count,
-        "departments": departments,
-        "grade_distribution": grade_distribution,
-        "average_attendance": round(average_attendance, 2) if average_attendance else 0,
-        "excellent_attendance_count": excellent_attendance_count,
-        "low_attendance_count": low_attendance_count,
-    }
+    grade_chart = [
+        {
+            "grade": grade,
+            "count": count,
+            "percentage": round(count / total_students * 100)
+            if total_students else 0,
+        }
+        for grade, count in grade_distribution.items()
+    ]
+
+    for department in departments:
+        department["percentage"] = (
+            round(department["student_count"] / total_students * 100)
+            if total_students else 0
+        )
+            
+        context = {
+            "total_students": total_students,
+            "average_marks": round(average_marks, 2) if average_marks else 0,
+            "highest_marks": highest_marks if highest_marks is not None else 0,
+            "lowest_marks": lowest_marks if lowest_marks is not None else 0,
+            "high_scorers_count": high_scorers_count,
+            "departments": departments,
+            "grade_distribution": grade_distribution,
+            "average_attendance": round(average_attendance, 2) if average_attendance else 0,
+            "excellent_attendance_count": excellent_attendance_count,
+            "low_attendance_count": low_attendance_count,
+            "grade_chart": grade_chart,
+        }
 
     return render(
         request,
