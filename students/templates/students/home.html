@@ -20,14 +20,25 @@
         <a href="/add/">Add Student</a>
         <a href="/search/">Search</a>
         <a href="/high-scorers/">High Scorers</a>
-        <a href="/admin/">Admin</a>
+        <a href="/analytics/">Analytics</a>
+        {% if user.is_authenticated %}
+            <span class="user-welcome">
+        👤          {{ user.username }}
+            </span>
+
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+       {% else %}
+            <a href="{% url 'login' %}">🔐 Login</a>
+       {% endif %}
     </div>
 </nav>
 
 <main class="container">
 
+    <!-- HERO SECTION -->
     <section class="hero">
         <h1>College Student Portal</h1>
+
         <p>
             Manage student records easily with a simple and modern
             Django-powered student management system.
@@ -44,6 +55,52 @@
         </a>
     </section>
 
+
+    <!-- DASHBOARD STATISTICS -->
+    <h2 class="section-title">📊 Dashboard Overview</h2>
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-icon">👨‍🎓</div>
+            <div>
+                <h3>Total Students</h3>
+                <strong>{{ total_students }}</strong>
+                <p>Registered students</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div>
+                <h3>High Scorers</h3>
+                <strong>{{ high_scorers_count }}</strong>
+                <p>Students scoring 80+</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div>
+                <h3>Average Marks</h3>
+                <strong>{{ average_marks }}</strong>
+                <p>Overall average</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🏢</div>
+            <div>
+                <h3>Departments</h3>
+                <strong>{{ total_departments }}</strong>
+                <p>Active departments</p>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- QUICK ACTIONS -->
     <h2 class="section-title">Quick Actions</h2>
 
     <section class="action-grid">

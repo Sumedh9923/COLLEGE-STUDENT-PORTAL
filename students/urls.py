@@ -10,4 +10,10 @@ urlpatterns = [
     path("high-scorers/", views.high_scorers, name="high_scorers"),
     path("edit/<int:id>/", views.edit_student, name="edit_student"),
     path("delete/<int:id>/", views.delete_student, name="delete_student"),
+    path("analytics/", views.analytics, name="analytics"),
+    path("student/<int:id>/", views.student_profile, name="student_profile"),
+
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("export/", views.export_students, name="export_students"),
 ]

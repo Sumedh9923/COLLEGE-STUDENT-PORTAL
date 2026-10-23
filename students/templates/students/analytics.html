@@ -1,0 +1,495 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Performance Analytics</title>
+
+    <link rel="stylesheet"
+          href="{% static 'students/style.css' %}">
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <a href="/" class="logo">
+        🎓 Student Portal
+    </a>
+
+    <div class="nav-links">
+
+        <a href="/">Dashboard</a>
+
+        <a href="/students/">
+            Students
+        </a>
+
+        <a href="/add/">
+            Add Student
+        </a>
+
+        <a href="/search/">
+            Search
+        </a>
+
+        <a href="/high-scorers/">
+            High Scorers
+        </a>
+
+        <a href="/analytics/">
+            Analytics
+        </a>
+
+        {% if user.is_authenticated %}
+            <span class="user-welcome">
+        👤          {{ user.username }}
+            </span>
+
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">🔐 Login</a>
+        {% endif %}
+
+    </div>
+
+</nav>
+
+
+<main class="container">
+
+    <!-- HEADER -->
+
+    <div class="page-header">
+
+        <h1>
+            📈 Performance Analytics
+        </h1>
+
+        <p>
+            Analyze student academic performance
+            and department statistics.
+        </p>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👨‍🎓
+            </div>
+
+            <div>
+
+                <h3>
+                    Total Students
+                </h3>
+
+                <strong>
+                    {{ total_students }}
+                </strong>
+
+                <p>
+                    Registered students
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📊
+            </div>
+
+            <div>
+
+                <h3>
+                    Average Marks
+                </h3>
+
+                <strong>
+                    {{ average_marks }}
+                </strong>
+
+                <p>
+                    Overall average
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🥇
+            </div>
+
+            <div>
+
+                <h3>
+                    Highest Marks
+                </h3>
+
+                <strong>
+                    {{ highest_marks }}
+                </strong>
+
+                <p>
+                    Best performance
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div>
+                <h3>{{ average_attendance }}%</h3>
+                <p>Average Attendance</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+           <div class="stat-icon">🟢</div>
+           <div>
+                <h3>{{ excellent_attendance_count }}</h3>
+                <p>Excellent Attendance</p>
+           </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🔴</div>
+            <div>
+                <h3>{{ low_attendance_count }}</h3>
+                <p>Low Attendance</p>
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🏆
+            </div>
+
+            <div>
+
+                <h3>
+                    High Scorers
+                </h3>
+
+                <strong>
+                    {{ high_scorers_count }}
+                </strong>
+
+                <p>
+                    Students scoring 80+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MARKS SUMMARY -->
+
+    <section class="card analytics-summary">
+
+        <h2>
+            📊 Marks Summary
+        </h2>
+
+        <div class="summary-grid">
+
+            <div class="summary-item">
+
+                <span>
+                    Highest Marks
+                </span>
+
+                <strong>
+                    {{ highest_marks }}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <span>
+                    Lowest Marks
+                </span>
+
+                <strong>
+                    {{ lowest_marks }}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <span>
+                    Average Marks
+                </span>
+
+                <strong>
+                    {{ average_marks }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DEPARTMENT PERFORMANCE -->
+     <section class="charts-section">
+
+    <h2>📊 Visual Analytics</h2>
+
+    <div class="charts-grid">
+
+        <div class="chart-card">
+            <h3>🎓 Grade Distribution</h3>
+
+            <div class="grade-chart">
+
+                {% for grade, count in grade_distribution.items %}
+                    <div class="chart-row">
+
+                        <span class="chart-label">
+                            {{ grade }}
+                        </span>
+
+                        <div class="chart-bar-container">
+                            <div
+                                class="chart-bar"
+                                style="width: {% if total_students %}{% widthratio count total_students 100 %}{% else %}0{% endif %}%;">
+                            </div>
+                        </div>
+
+                        <strong>{{ count }}</strong>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+        <div class="chart-card">
+            <h3>🏢 Department Students</h3>
+
+            <div class="department-chart">
+
+                {% for department in departments %}
+                    <div class="chart-row">
+
+                        <span class="chart-label">
+                            {{ department.department }}
+                        </span>
+
+                        <div class="chart-bar-container">
+                            <div
+                                class="chart-bar"
+                                style="width: {% if total_students %}{% widthratio department.student_count total_students 100 %}{% else %}0{% endif %}%;">
+                            </div>
+                        </div>
+
+                        <strong>
+                            {{ department.student_count }}
+                        </strong>
+
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+    <section class="card">
+
+        <h2>
+            🏢 Department Performance
+        </h2>
+
+        <p class="analytics-description">
+            Average marks and student count for
+            each department.
+        </p>
+
+
+        <div class="table-wrapper">
+
+            <table class="student-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Department
+                        </th>
+
+                        <th>
+                            Students
+                        </th>
+
+                        <th>
+                            Average Marks
+                        </th>
+
+                        <th>
+                            Performance
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for department in departments %}
+
+                    <tr>
+
+                        <td class="student-name">
+
+                            {{ department.department }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ department.student_count }}
+
+                        </td>
+
+
+                        <td class="marks">
+
+                            {{ department.average_marks|floatformat:2 }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if department.average_marks >= 80 %}
+
+                                <span class="badge badge-gold">
+                                    🏆 Excellent
+                                </span>
+
+                            {% elif department.average_marks >= 60 %}
+
+                                <span class="badge badge-green">
+                                    ✓ Good
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-blue">
+                                    Needs Improvement
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="4">
+
+                            <div class="empty-state">
+
+                                <div class="empty-state-icon">
+                                    📊
+                                </div>
+
+                                <h3>
+                                    No Data Available
+                                </h3>
+
+                                <p>
+                                    Add students to view
+                                    department analytics.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ACTION BUTTONS -->
+
+    <div class="analytics-actions">
+
+        <a href="/students/"
+           class="btn btn-secondary">
+
+            👨‍🎓 View Students
+
+        </a>
+
+
+        <a href="/add/"
+           class="btn btn-primary">
+
+            + Add Student
+
+        </a>
+
+    </div>
+
+</main>
+
+
+<footer class="footer">
+
+    © 2026 College Student Portal •
+    Built with Django
+
+</footer>
+
+</body>
+</html>

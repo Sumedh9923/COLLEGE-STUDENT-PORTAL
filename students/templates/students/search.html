@@ -5,14 +5,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Students</title>
+
+    <title>Search Students - Student Portal</title>
+
     <link rel="stylesheet" href="{% static 'students/style.css' %}">
 </head>
 
 <body>
 
 <nav class="navbar">
-    <a href="/" class="logo">🎓 Student Portal</a>
+
+    <a href="/" class="logo">
+        🎓 Student Portal
+    </a>
 
     <div class="nav-links">
         <a href="/">Dashboard</a>
@@ -20,107 +25,252 @@
         <a href="/add/">Add Student</a>
         <a href="/search/">Search</a>
         <a href="/high-scorers/">High Scorers</a>
-        <a href="/admin/">Admin</a>
+        <a href="/analytics/">Analytics</a>
+
+        {% if user.is_authenticated %}
+            <span class="user-welcome">
+                👤 {{ user.username }}
+            </span>
+
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">🔐 Login</a>
+        {% endif %}
     </div>
+
 </nav>
+
 
 <main class="container">
 
-    <div class="page-header">
-        <h1>🔍 Search Students</h1>
-        <p>Search for a student using their name.</p>
-    </div>
+    <section class="page-header">
+        <h1>🔎 Advanced Student Search</h1>
 
-    <div class="card">
+        <p>
+            Search and filter students using multiple criteria.
+        </p>
+    </section>
 
-        <form method="GET" action="/search/">
 
-            <div class="search-box">
+    <section class="filter-card">
 
-                <input
-                    type="text"
-                    name="q"
-                    value="{{ q }}"
-                    class="form-control"
-                    placeholder="Enter student name..."
+        <form method="GET">
+
+            <div class="filter-grid">
+
+                <div class="filter-group">
+                    <label>Student Name</label>
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ query }}"
+                        placeholder="Search by name..."
+                    >
+                </div>
+
+
+                <div class="filter-group">
+                    <label>Department</label>
+
+                    <select name="department">
+
+                        <option value="">
+                            All Departments
+                        </option>
+
+                        {% for dept in departments %}
+
+                            <option
+                                value="{{ dept }}"
+                                {% if department == dept %}selected{% endif %}
+                            >
+                                {{ dept }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+                    <label>Minimum Marks</label>
+
+                    <input
+                        type="number"
+                        name="min_marks"
+                        value="{{ min_marks }}"
+                        min="0"
+                        max="100"
+                        placeholder="e.g. 60"
+                    >
+                </div>
+
+
+                <div class="filter-group">
+                    <label>Maximum Marks</label>
+
+                    <input
+                        type="number"
+                        name="max_marks"
+                        value="{{ max_marks }}"
+                        min="0"
+                        max="100"
+                        placeholder="e.g. 90"
+                    >
+                </div>
+                <div class="filter-group">
+                     <label>Sort By</label>
+
+                    <select name="sort">
+
+                        <option value="marks_desc"
+                            {% if sort == "marks_desc" %}selected{% endif %}>
+                            Highest Marks
+                        </option>
+
+                        <option value="marks_asc"
+                           {% if sort == "marks_asc" %}selected{% endif %}>
+                            Lowest Marks
+                        </option>
+
+                        <option value="name_asc"
+                            {% if sort == "name_asc" %}selected{% endif %}>
+                            Name A → Z
+                        </option>
+
+                        <option value="name_desc"
+                            {% if sort == "name_desc" %}selected{% endif %}>
+                            Name Z → A
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+
+            <div class="filter-actions">
+
+                 <button
+                     type="submit"
+                     class="btn btn-primary"
+                 >
+                     🔎 Apply Filters
+                </button>
+
+                 <a
+                     href="{% url 'search_student' %}"
+                     class="btn btn-secondary"
                 >
+                     ↻ Clear Filters
+                </a>
 
-                <button type="submit"
-                        class="btn btn-primary">
-                    🔍 Search
+                <button
+                    type="submit"
+                    formaction="{% url 'export_students' %}"
+                    class="btn btn-secondary"
+                >
+                    📥 Export CSV
                 </button>
 
             </div>
 
         </form>
 
-        {% if q %}
+    </section>
 
-            <div class="search-info">
-                Search results for:
-                <strong>"{{ q }}"</strong>
-            </div>
 
-        {% endif %}
+    <section class="results-section">
+
+        <div class="results-header">
+
+            <h2>📋 Search Results</h2>
+
+            <span class="result-count">
+                {{ students|length }} student{{ students|length|pluralize }}
+            </span>
+
+        </div>
+
 
         {% if students %}
 
-            <div class="table-wrapper">
+            <div class="table-container">
 
-                <table class="student-table">
+                <table>
 
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Marks</th>
+                            <th>Grade</th>
                             <th>Department</th>
                             <th>Performance</th>
+                            <th>Profile</th>
                         </tr>
                     </thead>
+
 
                     <tbody>
 
                         {% for student in students %}
 
-                        <tr>
+                            <tr>
 
-                            <td class="student-name">
-                                {{ student.name }}
-                            </td>
+                                <td>
+                                    <strong>
+                                        {{ student.name }}
+                                    </strong>
+                                </td>
 
-                            <td class="marks">
-                                {{ student.marks }}
-                            </td>
+                                <td>
+                                    {{ student.marks }}
+                                </td>
 
-                            <td class="department">
-                                {{ student.department }}
-                            </td>
-
-                            <td>
-
-                                {% if student.marks >= 80 %}
-
-                                    <span class="badge badge-gold">
-                                        🏆 High Scorer
+                                <td>
+                                    <span class="grade-badge">
+                                        {{ student.grade }}
                                     </span>
+                                </td>
 
-                                {% elif student.marks >= 50 %}
+                                <td>
+                                    {{ student.department }}
+                                </td>
 
-                                    <span class="badge badge-green">
-                                        ✓ Pass
-                                    </span>
+                                <td>
 
-                                {% else %}
+                                    {% if student.marks >= 80 %}
+                                        <span class="performance-badge high">
+                                            🏆 High
+                                        </span>
 
-                                    <span class="badge badge-blue">
-                                        Needs Improvement
-                                    </span>
+                                    {% elif student.marks >= 60 %}
+                                        <span class="performance-badge medium">
+                                            👍 Good
+                                        </span>
 
-                                {% endif %}
+                                    {% else %}
+                                        <span class="performance-badge low">
+                                            📚 Needs Improvement
+                                        </span>
 
-                            </td>
+                                    {% endif %}
 
-                        </tr>
+                                </td>
+
+                                <td>
+                                    <a
+                                        href="{% url 'student_profile' student.id %}"
+                                        class="profile-link"
+                                    >
+                                        View →
+                                    </a>
+                                </td>
+
+                            </tr>
 
                         {% endfor %}
 
@@ -130,47 +280,31 @@
 
             </div>
 
-        {% elif q %}
-
-            <div class="empty-state">
-
-                <div class="empty-state-icon">
-                    🔍
-                </div>
-
-                <h3>No Matching Student Found</h3>
-
-                <p>
-                    We couldn't find a student matching
-                    "{{ q }}".
-                </p>
-
-            </div>
-
         {% else %}
 
             <div class="empty-state">
 
-                <div class="empty-state-icon">
-                    🔎
+                <div class="empty-icon">
+                    🔍
                 </div>
 
-                <h3>Start Searching</h3>
+                <h3>No students found</h3>
 
                 <p>
-                    Enter a student's name above to search.
+                    Try changing your search or filter criteria.
                 </p>
 
             </div>
 
         {% endif %}
 
-    </div>
+    </section>
 
 </main>
 
+
 <footer class="footer">
-    © 2026 College Student Portal
+    © 2026 College Student Portal • Built with Django
 </footer>
 
 </body>

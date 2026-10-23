@@ -20,7 +20,16 @@
         <a href="/add/">Add Student</a>
         <a href="/search/">Search</a>
         <a href="/high-scorers/">High Scorers</a>
-        <a href="/admin/">Admin</a>
+        <a href="/analytics/">Analytics</a>
+        {% if user.is_authenticated %}
+            <span class="user-welcome">
+        👤          {{ user.username }}
+            </span>
+
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">🔐 Login</a>
+        {% endif %}
     </div>
 </nav>
 
@@ -51,7 +60,9 @@
                     <tr>
                         <th>Name</th>
                         <th>Marks</th>
+                        <th>Grade</th>
                         <th>Department</th>
+                        <th>Attendance</th>
                         <th>Performance</th>
                         <th>Actions</th>
                     </tr>
@@ -64,15 +75,55 @@
                     <tr>
 
                         <td class="student-name">
+                        <a href="{% url 'student_profile' student.id %}">
                             {{ student.name }}
+                        </a>
                         </td>
 
                         <td class="marks">
                             {{ student.marks }}
                         </td>
 
+                        <td>
+                            {% if student.grade == "A+" %}
+                                <span class="grade-badge grade-a-plus">
+                                    A+
+                                </span>
+                            {% elif student.grade == "A" %}
+                                <span class="grade-badge grade-a">
+                                    A
+                                </span>
+                            {% elif student.grade == "B+" %}
+                                <span class="grade-badge grade-b-plus">
+                                    B+
+                                </span>
+                            {% elif student.grade == "B" %}
+                                <span class="grade-badge grade-b">
+                                    B
+                                </span>
+                            {% elif student.grade == "C" %}
+                                <span class="grade-badge grade-c">
+                                    C
+                                </span>
+                            {% elif student.grade == "D" %}
+                                <span class="grade-badge grade-d">
+                                    D
+                                </span>
+                            {% else %}
+                                <span class="grade-badge grade-f">
+                                    F
+                                </span>
+                            {% endif %}
+                        </td>
+
                         <td class="department">
                             {{ student.department }}
+                        </td>
+                        
+                        <td>
+                            <strong>{{ student.attendance }}%</strong>
+                            <br>
+                            <small>{{ student.attendance_status }}</small>
                         </td>
 
                         <td>
@@ -123,7 +174,7 @@
                     {% empty %}
 
                     <tr>
-                        <td colspan="5">
+                        <td colspan="6">
 
                             <div class="empty-state">
 
