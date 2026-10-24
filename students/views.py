@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Student
 
+@login_required
 def home(request):
     total_students = Student.objects.count()
     high_scorers_count = Student.objects.filter(marks__gte=80).count()
@@ -32,7 +33,7 @@ def home(request):
         context
     )
 
-
+@login_required
 def student_list(request):
     students = Student.objects.all().order_by("-marks")
 
@@ -155,7 +156,7 @@ def search_student(request):
         context
     )
 
-
+@login_required
 def high_scorers(request):
     students = Student.objects.filter(
         marks__gte=80
@@ -332,6 +333,7 @@ def analytics(request):
         context
     )
 
+@login_required
 def student_profile(request, id):
     student = get_object_or_404(Student, id=id)
 
@@ -416,6 +418,8 @@ def export_students(request):
         "Marks",
         "Grade",
         "Department"
+        "Attendance (%)",
+        "Attendance Status",
     ])
 
     for student in students:
@@ -424,7 +428,9 @@ def export_students(request):
             student.name,
             student.marks,
             student.grade,
-            student.department
+            student.department,
+            student.attendance,
+            student.attendance_status,
         ])
 
     return response
