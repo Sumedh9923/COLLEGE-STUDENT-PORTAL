@@ -43,19 +43,49 @@ def student_list(request):
     )
 
 
+
 @login_required
 def add_student(request):
     if request.method == "POST":
-        name = request.POST["name"]
-        marks = request.POST["marks"]
-        department = request.POST["department"]
-        attendance = request.POST["attendance"]
+        name = request.POST.get("name", "").strip()
+        department = request.POST.get("department", "").strip()
+
+        try:
+            marks = float(request.POST.get("marks", ""))
+            attendance = float(request.POST.get("attendance", ""))
+        except (ValueError, TypeError):
+            return render(
+                request,
+                "students/add_student.html",
+                {"error": "Marks and attendance must be valid numbers."},
+            )
+
+        if not name or not department:
+            return render(
+                request,
+                "students/add_student.html",
+                {"error": "Name and department are required."},
+            )
+
+        if not 0 <= marks <= 100:
+            return render(
+                request,
+                "students/add_student.html",
+                {"error": "Marks must be between 0 and 100."},
+            )
+
+        if not 0 <= attendance <= 100:
+            return render(
+                request,
+                "students/add_student.html",
+                {"error": "Attendance must be between 0 and 100."},
+            )
 
         Student.objects.create(
             name=name,
             marks=marks,
             department=department,
-            attendance=attendance
+            attendance=attendance,
         )
 
         return redirect("student_list")
@@ -137,16 +167,62 @@ def high_scorers(request):
         {"students": students}
     )
 
+
 @login_required
 def edit_student(request, id):
     student = get_object_or_404(Student, id=id)
 
     if request.method == "POST":
-        student.name = request.POST["name"]
-        student.marks = request.POST["marks"]
-        student.department = request.POST["department"]
-        student.attendance = request.POST["attendance"]
-        
+        name = request.POST.get("name", "").strip()
+        department = request.POST.get("department", "").strip()
+
+        try:
+            marks = float(request.POST.get("marks", ""))
+            attendance = float(request.POST.get("attendance", ""))
+        except (ValueError, TypeError):
+            return render(
+                request,
+                "students/edit_student.html",
+                {
+                    "student": student,
+                    "error": "Marks and attendance must be valid numbers.",
+                },
+            )
+
+        if not name or not department:
+            return render(
+                request,
+                "students/edit_student.html",
+                {
+                    "student": student,
+                    "error": "Name and department are required.",
+                },
+            )
+
+        if not 0 <= marks <= 100:
+            return render(
+                request,
+                "students/edit_student.html",
+                {
+                    "student": student,
+                    "error": "Marks must be between 0 and 100.",
+                },
+            )
+
+        if not 0 <= attendance <= 100:
+            return render(
+                request,
+                "students/edit_student.html",
+                {
+                    "student": student,
+                    "error": "Attendance must be between 0 and 100.",
+                },
+            )
+
+        student.name = name
+        student.marks = marks
+        student.department = department
+        student.attendance = attendance
         student.save()
 
         return redirect("student_list")
@@ -154,18 +230,19 @@ def edit_student(request, id):
     return render(
         request,
         "students/edit_student.html",
-        {"student": student}
+        {"student": student},
     )
 
 
 @login_required
 def delete_student(request, id):
-    student = get_object_or_404(Student, id=id)
-
-    if request.method == "POST":
-        student.delete()
-
+    if request.method != "POST":
         return redirect("student_list")
+
+    student = get_object_or_404(Student, id=id)
+    student.delete()
+
+    return redirect("student_list")
 
 @login_required
 def analytics(request):
@@ -235,19 +312,19 @@ def analytics(request):
             if total_students else 0
         )
             
-        context = {
-            "total_students": total_students,
-            "average_marks": round(average_marks, 2) if average_marks else 0,
-            "highest_marks": highest_marks if highest_marks is not None else 0,
-            "lowest_marks": lowest_marks if lowest_marks is not None else 0,
-            "high_scorers_count": high_scorers_count,
-            "departments": departments,
-            "grade_distribution": grade_distribution,
-            "average_attendance": round(average_attendance, 2) if average_attendance else 0,
-            "excellent_attendance_count": excellent_attendance_count,
-            "low_attendance_count": low_attendance_count,
-            "grade_chart": grade_chart,
-        }
+    context = {
+        "total_students": total_students,
+        "average_marks": round(average_marks, 2) if average_marks else 0,
+        "highest_marks": highest_marks if highest_marks is not None else 0,
+        "lowest_marks": lowest_marks if lowest_marks is not None else 0,
+        "high_scorers_count": high_scorers_count,
+        "departments": departments,
+        "grade_distribution": grade_distribution,
+        "average_attendance": round(average_attendance, 2) if average_attendance else 0,
+        "excellent_attendance_count": excellent_attendance_count,
+        "low_attendance_count": low_attendance_count,
+        "grade_chart": grade_chart,
+    }
 
     return render(
         request,

@@ -1,11 +1,30 @@
+
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Student(models.Model):
     name = models.CharField(max_length=100)
-    marks = models.FloatField()
+
+    marks = models.FloatField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ]
+    )
+
     department = models.CharField(max_length=50)
-    attendance = models.FloatField(default=75)
+
+    attendance = models.FloatField(
+        default=75,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ]
+    )
+
+    def __str__(self):
+        return self.name
 
     @property
     def grade(self):
@@ -23,9 +42,6 @@ class Student(models.Model):
             return "D"
         else:
             return "F"
-
-    def __str__(self):
-        return self.name
 
     @property
     def attendance_status(self):
